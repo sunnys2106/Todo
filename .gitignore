@@ -1,0 +1,88 @@
+# Node.js specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+
+# Logs
+logs/
+*.log
+*.log.*
+/*.log
+/logs/
+
+# Build and output directories
+dist/
+build/
+
+# Vite specific
+.vite/
+*.cache
+
+# Dependency directories
+node_modules/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Test coverage
+coverage/
+
+# Miscellaneous
+*.tgz
+*.temp
+*.bak
+*.old
+
+# React specific
+public/**/*.cache
+
+# Temporary files
+tmp/
+temp/
+
+# Local files for debugging
+debug/
+local/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
