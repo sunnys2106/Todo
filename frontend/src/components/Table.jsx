@@ -1,5 +1,13 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
+const formatToReadableDate = (date) => {
+    const dateObj = new Date(date);
+    dateObj.setDate(dateObj.getDate() + 1);
+    dateObj.setHours(0, 0, 0, 0);
+    return new Intl.DateTimeFormat("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    }).format(dateObj);
+};
 
 function Table({ handleOpen, onDelete, tableData, error }) {
     let counter = 1;
@@ -13,50 +21,32 @@ function Table({ handleOpen, onDelete, tableData, error }) {
                         <tr>
                             <th></th>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Job</th>
-                            <th>Rate</th>
-                            <th>Status</th>
-                            <th>Update Client</th>
-                            <th>Delete Client</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Update Task</th>
+                            <th>Delete Task</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData.map((client) => (
-                            <tr key={client.id} className="hover">
+                        {tableData.map((note) => (
+                            <tr key={note.id} className="hover">
                                 <td>{counter}</td>
                                 {counter++ && null}
-                                <td>{client.name}</td>
-                                <td>{client.email}</td>
-                                <td>{client.job}</td>
-                                <td>{client.rate}</td>
+                                <td>{note.name}</td>
+                                <td>{note.description}</td>
+                                <td>{formatToReadableDate(note.due_date)}</td>
                                 <td>
                                     <button
-                                        className={`btn rounded-full w-20 ${
-                                            client.isactive
-                                                ? `btn-primary`
-                                                : `btn-outline`
-                                        }`}
-                                    >
-                                        {client.isactive
-                                            ? "Active"
-                                            : "Inactive"}
-                                    </button>
-                                </td>
-                                <td>
-                                    <button
-                                        className="btn btn-secondary"
-                                        onClick={() =>
-                                            handleOpen("edit", client)
-                                        }
+                                        className="btn btn-outline btn-warning"
+                                        onClick={() => handleOpen("edit", note)}
                                     >
                                         Update
                                     </button>
                                 </td>
                                 <td>
                                     <button
-                                        className="btn btn-error"
-                                        onClick={() => onDelete(client.id)}
+                                        className="btn btn-outline btn-error"
+                                        onClick={() => onDelete(note.id)}
                                     >
                                         Delete
                                     </button>

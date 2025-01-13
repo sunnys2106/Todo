@@ -1,23 +1,21 @@
 import { useState, useEffect } from "react";
 
-function ModalForm({ isOpen, onClose, mode, onSubmit, clientData }) {
-    const [rate, setRate] = useState("");
+function ModalForm({ isOpen, onClose, mode, onSubmit, noteData }) {
     const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [job, setJob] = useState("");
-    const [status, setStatus] = useState(false);
+    const [description, setDescription] = useState("");
+    const [duedate, setDuedate] = useState("");
     const [id, setId] = useState("");
     const [errors, setErrors] = useState({});
 
     const validate = () => {
         const newErrors = {};
         if (!name.trim()) newErrors.name = "Name is required.";
-        if (!email.trim()) newErrors.email = "Email is required.";
-        else if (!/\S+@\S+\.\S+/.test(email))
-            newErrors.email = "Invalid email format.";
-        if (!job.trim()) newErrors.job = "Job is required.";
-        if (!rate || isNaN(rate) || rate <= 0)
-            newErrors.rate = "Rate must be a positive number.";
+
+        const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+
+        if (!dateRegex.test(duedate)) {
+            newErrors.duedate = "Date must be in YYYY-MM-DD format.";
+        }
         return newErrors;
     };
 
@@ -25,7 +23,6 @@ function ModalForm({ isOpen, onClose, mode, onSubmit, clientData }) {
         e.preventDefault();
 
         const validationErrors = validate();
-        console.log(validationErrors);
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
@@ -33,14 +30,12 @@ function ModalForm({ isOpen, onClose, mode, onSubmit, clientData }) {
         setErrors({});
 
         try {
-            const clientData = {
+            const noteData = {
                 name,
-                email,
-                job,
-                rate: Number(rate),
-                isactive: status,
+                description,
+                duedate,
             };
-            await onSubmit(clientData, id);
+            await onSubmit(noteData, id);
         } catch (err) {
             console.error("Error submitting data", err);
         }
@@ -48,111 +43,90 @@ function ModalForm({ isOpen, onClose, mode, onSubmit, clientData }) {
     };
 
     useEffect(() => {
-        if (mode === "edit" && clientData) {
-            setId(clientData.id);
-            setName(clientData.name);
-            setEmail(clientData.email);
-            setJob(clientData.job);
-            setRate(clientData.rate);
-            setStatus(clientData.isactive);
+        if (mode === "edit" && noteData) {
+            setId(noteData.id);
+            setName(noteData.name);
+            setDescription(noteData.description);
+            setDuedate(noteData.due_date);
         } else {
             setName("");
-            setEmail("");
-            setJob("");
-            setRate("");
-            setStatus(false);
+            setDescription("");
+            setDuedate("");
         }
-    }, [mode, clientData]);
+    }, [mode, noteData]);
+
+    const closeForm = () => {
+        setErrors({});
+        onClose();
+    };
 
     return (
         <dialog id="my_modal_3" className="modal" open={isOpen}>
             <div className="modal-box">
                 <h3 className="font-bold text-lg py-4">
-                    {mode === "edit" ? "Edit Client" : "Add Client"}
+                    {mode === "edit" ? "Edit Task" : "Add Task"}
                 </h3>
                 <form method="dialog" onSubmit={handleSubmit}>
                     {/* if there is a button in form, it will close the modal */}
                     <button
                         type="button"
                         className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-                        onClick={onClose}
+                        onClick={closeForm}
                     >
                         ✕
                     </button>
+
                     {errors.name && (
                         <p className="text-red-500 text-sm">{errors.name}</p>
                     )}
-                    <label className="mb-4 input input-bordered flex items-center gap-2">
-                        Name
-                        <input
-                            type="text"
-                            className="grow"
+                    <label className="form-control">
+                        <div className="label">
+                            <span className="label-text">Name</span>
+                        </div>
+                        <textarea
+                            className="textarea textarea-bordered h-12"
                             value={name}
                             onChange={(e) => {
                                 setName(e.target.value);
                             }}
-                        />
+                        ></textarea>
                     </label>
-                    {errors.email && (
-                        <p className="text-red-500 text-sm">{errors.email}</p>
+
+                    <label className="form-control">
+                        <div className="label">
+                            <span className="label-text">Description</span>
+                        </div>
+                        <textarea
+                            className="textarea textarea-bordered h-24"
+                            value={description}
+                            onChange={(e) => {
+                                setDescription(e.target.value);
+                            }}
+                        ></textarea>
+                    </label>
+
+                    {errors.duedate && (
+                        <p className="text-red-500 text-sm mt-2">
+                            {errors.duedate}
+                        </p>
                     )}
                     <label className="my-4 input input-bordered flex items-center gap-2">
-                        Email
+                        Due Date
                         <input
                             type="text"
                             className="grow"
-                            value={email}
+                            value={duedate}
                             onChange={(e) => {
-                                setEmail(e.target.value);
+                                setDuedate(e.target.value);
                             }}
+                            placeholder="YYYY-MM-DD"
                         />
                     </label>
-                    {errors.job && (
-                        <p className="text-red-500 text-sm">{errors.job}</p>
-                    )}
-                    <label className="my-4 input input-bordered flex items-center gap-2">
-                        Job
-                        <input
-                            type="text"
-                            className="grow"
-                            value={job}
-                            onChange={(e) => {
-                                setJob(e.target.value);
-                            }}
-                        />
-                    </label>
-
-                    {errors.rate && (
-                        <p className="text-red-500 text-sm">{errors.rate}</p>
-                    )}
-                    <div className="my-4 flex justify-between">
-                        <label className="mr-4 input input-bordered flex items-center gap-2">
-                            Rate
-                            <input
-                                type="number"
-                                className="grow"
-                                value={rate}
-                                onChange={(e) => {
-                                    setRate(e.target.value);
-                                }}
-                            />
-                        </label>
-
-                        <select
-                            value={status ? "Active" : "Inactive"}
-                            className="select select-bordered w-full max-w-xs"
-                            onChange={(e) => {
-                                setStatus(e.target.value === "Active");
-                            }}
-                        >
-                            <option>Inactive</option>
-                            <option>Active</option>
-                        </select>
+                    <div className="mt-4 w-full flex justify-center">
+                        <button className="btn btn-wide btn-outline btn-success">
+                            {mode === "edit" ? "Save Changes" : "Add Task"}
+                        </button>
                     </div>
-
-                    <button className="btn btn-success">
-                        {mode === "edit" ? "Save Changes" : "Add Client"}
-                    </button>
                 </form>
             </div>
         </dialog>

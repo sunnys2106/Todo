@@ -4,13 +4,13 @@ import Table from "./components/Table.jsx";
 import ModalForm from "./components/ModalForm.jsx";
 import Alert from "./components/Alert.jsx";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "./api/axios.js";
 
 function App() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("add");
     const [searchTerm, setSearchTerm] = useState("");
-    const [client, setClient] = useState(null);
+    const [note, setNote] = useState(null);
     const [tableData, setTableData] = useState([]);
     const [error, setError] = useState(null);
     const [alert, setAlert] = useState({
@@ -19,53 +19,49 @@ function App() {
         message: "",
     });
 
-    const handleModalOpen = (mode, clientData) => {
+    const handleModalOpen = (mode, noteData) => {
         setModalOpen(true);
         setModalMode(mode);
-        setClient(clientData);
+        setNote(noteData);
     };
 
-    const handleSubmit = async (clientData, id) => {
+    const handleSubmit = async (noteData, id) => {
         if (modalMode === "add") {
             try {
-                await axios.post(
-                    "http://localhost:3000/api/clients",
-                    clientData
-                );
+                console.log("here", noteData);
+
+                await axios.post("/api/notes", noteData);
                 setAlert({
                     visible: true,
                     type: "alert-success",
-                    message: "Client added successfully",
+                    message: "Note added successfully",
                 });
             } catch (err) {
                 setAlert({
                     visible: true,
                     type: "alert-error",
-                    message: "Error adding client",
+                    message: "Error adding note",
                 });
-                console.log("error adding client frontend: ", err);
+                console.log("error adding note frontend: ", err);
             } finally {
                 fetchData();
             }
         } else {
             try {
-                console.log("here", clientData);
-                await axios.put(
-                    `http://localhost:3000/api/clients/${id}`,
-                    clientData
-                );
+                console.log("here", noteData);
+                await axios.put(`/api/notes/${id}`, noteData);
                 setAlert({
                     visible: true,
                     type: "alert-success",
-                    message: "Client updated successfully",
+                    message: "Note updated successfully",
                 });
             } catch (err) {
                 setAlert({
                     visible: true,
                     type: "alert-error",
-                    message: "Error updating client",
+                    message: "Error updating note",
                 });
-                console.log("error updating client frontend: ", err);
+                console.log("error updating note frontend: ", err);
             } finally {
                 fetchData();
             }
@@ -74,49 +70,62 @@ function App() {
 
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm(
-            "Are you sure you want to delete this client?"
+            "Are you sure you want to delete this task?"
         );
         if (confirmDelete) {
             try {
-                await axios.delete(`http://localhost:3000/api/clients/${id}`);
+                await axios.delete(`/api/notes/${id}`);
                 // setTableData((prevData) => {
-                //     return prevData.filter((client) => client.id !== id);
+                //     return prevData.filter((note) => note.id !== id);
                 // });
                 setAlert({
                     visible: true,
                     type: "alert-success",
-                    message: "Client deleted successfully",
+                    message: "Note deleted successfully",
                 });
                 fetchData();
             } catch (err) {
                 setAlert({
                     visible: true,
                     type: "alert-error",
-                    message: "Error deleting client",
+                    message: "Error deleting note",
                 });
                 setError(err);
             }
         }
     };
 
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
     const fetchData = async () => {
         try {
             if (searchTerm) {
                 const response = await axios.get(
-                    `http://localhost:3000/api/clients/search?q=${searchTerm}`
+                    `/api/notes/search?q=${searchTerm}`
                 );
+                response.data.map((note) => {
+                    const dateObj = new Date(note.due_date);
+                    note.due_date = formatDate(dateObj);
+                });
                 setTableData(response.data);
             } else {
-                const response = await axios.get(
-                    "http://localhost:3000/api/clients"
-                );
+                const response = await axios.get("/api/notes");
+                response.data.map((note) => {
+                    const dateObj = new Date(note.due_date);
+                    note.due_date = formatDate(dateObj);
+                });
                 setTableData(response.data);
             }
         } catch (err) {
             setAlert({
                 visible: true,
                 type: "alert-error",
-                message: "Error retrieving clients",
+                message: "Error retrieving notes",
             });
             setError(err.message);
         }
@@ -152,7 +161,7 @@ function App() {
                 onClose={() => setModalOpen(false)}
                 onSubmit={handleSubmit}
                 mode={modalMode}
-                clientData={client}
+                noteData={note}
             />
         </>
     );

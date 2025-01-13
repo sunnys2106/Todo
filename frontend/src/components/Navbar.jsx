@@ -11,14 +11,14 @@ function Navbar({ handleOpen, onSearch }) {
                     onSearch("");
                 }}
             >
-                <a className="btn btn-ghost text-xl">Clients</a>
+                <a className="btn btn-ghost text-xl">To Do</a>
             </div>
             <div className="navbar-center">
-                <div className="form-control">
+                <div className="form-control ">
                     <input
                         type="text"
                         placeholder="Search"
-                        className="input input-bordered w-24 md:w-auto"
+                        className="input input-bordered w-48 md:w-64"
                         onChange={(e) => setInputValue(e.target.value)}
                     />
                 </div>
@@ -46,10 +46,10 @@ function Navbar({ handleOpen, onSearch }) {
             </div>
             <div className="navbar-end">
                 <a
-                    className="btn btn-secondary"
+                    className="btn btn-outline btn-success"
                     onClick={() => handleOpen("add")}
                 >
-                    Add Client
+                    Add Task
                 </a>
             </div>
         </div>

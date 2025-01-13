@@ -1,8 +1,9 @@
-npm install in frontend and backend directories
+# Todo List
 
-cd into both frontend and backend and run server with "npm run dev"
+A webapp that allows users to manage a list of todo tasks
 
-also need to setup postgresql db and create .env with proper variables for db.js
+##Technologies Used
 
-video from Kenn Onirom: https://www.youtube.com/watch?v=gTD8b5Yxuuo
-  or read the docs: https://docs.google.com/document/d/e/2PACX-1vTfYBAnT9sZ96xjGsozr2Fss03b9xoCUxMH0LE6F7zrmDRmMvhiuNkQtriM6xT_w1uYUfmp0AfbYy21/pub
+-   **Frontend**: React, Vite, axios, Tailwind CSS and daisyUI
+-   **Backend**: Express.js and express-validator
+-   **Database**: PostgreSQL
